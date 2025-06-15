@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LockedIn</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="/javascripts/spotify_api.js"></script>
+    <script src="/javascripts/index.js"></script>
+    <script src="/javascripts/timer.js" defer></script>
+    <script src="/javascripts/vue.js" defer></script>
+
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <link rel="stylesheet" href="/stylesheets/timer.css">
+</head>
+
+<body>
+    <div id="app">
+        <!-- Mobile show menu button (only when sidebar is hidden) -->
+        <button type="button" class="mobile-show-menu" @click="toggleMenu" v-show="!show_menu">
+            Show Menu
+        </button>
+
+        <div class="add-playlists-modal" :class="{'hidden': !playlistModalVisible}">
+            <h1 id="add-playlist-header" class="header">Add playlist</h1>
+            <button type="button" class="close-button" @click="playlistModalVisible = false">X</button>
+            <input type="text" v-model="playlist_name" placeholder="Playlist name">
+            <input type="text" v-model="spotify_id" placeholder="Spotify ID">
+            <button type="button" @click="addPlaylist">Add playlist</button>
+        </div>
+
+        <div class="topbar" :class="{'hidden': (timerRunning)}">
+            <h1 id="header" class="header">LockedIn</h1>
+            <div class="topbar-right">
+                <button type="button" id="menu-button" class="header" @click="toggleMenu">
+                    {{ show_menu ? 'Hide menu' : 'Show menu' }}</button>
+
+                <div id="profile-button" class="topbar-right" tabindex="0" role="button" @click="toggleProfileDropdown">
+                    <template v-if="loggedIn">
+                        <img :src="avatar" alt="User Avatar" class="avatar-img" />
+                        <!-- <span class="username" v-if="username">{{ username }}</span> -->
+
+                        <div v-if="showProfileDropdown" class="profile-dropdown">
+                            <a href="#" @click.prevent="profile">Profile</a>
+                            <a href="#" @click.prevent="admin" v-if="isAdmin">Admin</a>
+                            <a href="#" @click.prevent="logout">Logout</a>
+                        </div>
+                    </template>
+                    <template v-else>
+                        <button type="button" class="header" @click="login">Login/Signup</button>
+                    </template>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar" :class="{'hidden': (!show_menu || timerRunning)}">
+            <!-- Mobile/Tablet header section (replaces topbar) -->
+            <div class="sidebar-header">
+                <div class="sidebar-title-section">
+                    <h1 class="header">LockedIn</h1>
+                    <div class="sidebar-profile" tabindex="0" role="button" @click="toggleProfileDropdown">
+                        <template v-if="loggedIn">
+                            <img :src="avatar" alt="User Avatar" class="avatar-img" />
+                            <div v-if="showProfileDropdown" class="profile-dropdown">
+                                <a href="#" @click.prevent="profile">Profile</a>
+                                <a href="#" @click.prevent="logout">Logout</a>
+                            </div>
+                        </template>
+                        <template v-else>
+                            <button type="button" class="header" @click="login">Login/Signup</button>
+                        </template>
+                    </div>
+                </div>
+                <div class="sidebar-menu-section">
+                    <button type="button" class="sidebar-menu-button header" @click="toggleMenu">
+                        {{ show_menu ? 'Hide menu' : 'Show menu' }}
+                    </button>
+                </div>
+            </div>
+
+            <!-- Original sidebar content -->
+            <h1>Music</h1>
+
+
+            <!-- spotify not connected -->
+            <button id="spotify-connect-button" type="button" @click="connectToSpotify()" v-if="!spotifyConnected">
+                <img class="button-image" src="/images/logo/spotify_logo.png" alt="Spotify Connect">
+                <span class="button-text spotify-connect-button-text">Connect to Spotify</span>
+            </button>
+
+            <!-- spotify connected -->
+            <button id="add-playlists-button" class="button music-button" type="button" v-if="spotifyConnected" @click="playlistModalVisible = true">Add Playlist</button>
+            <button class="button music-button" type="button" v-if="spotifyConnected" @click="toggleSpotifyPlaylists">
+                {{ showSpotifyPlaylists ? 'Show saved playlists' : 'Show account playlists' }}
+            </button>
+
+            <div v-if="showSpotifyPlaylists && spotifyConnected">
+                <h3>Your Spotify Playlists:</h3>
+                <button class="playlist-button" type="button" v-for="playlist in spotifyUserPlaylists"
+                    @click="setPlaylist(playlist)"
+                    :class="{'selected': currentPlaylist && currentPlaylist.id === playlist.id}">
+                    {{ playlist.playlist_name }}
+                </button>
+            </div>
+
+            <div v-if="!showSpotifyPlaylists">
+                <h3>Saved Playlists:</h3>
+                <button class="playlist-button" type="button" v-if="spotifyConnected" v-for="playlist in userPlaylists"
+                    @click="setPlaylist(playlist)"
+                    :class="{'selected': currentPlaylist && currentPlaylist.id === playlist.id}">
+                    {{ playlist.playlist_name }}
+                </button>
+                <button class="playlist-button" type="button" v-if="spotifyConnected" v-for="playlist in curatedPlaylists"
+                    @click="setPlaylist(playlist)"
+                    :class="{'selected': currentPlaylist && currentPlaylist.id === playlist.id}">
+                    {{ playlist.playlist_name }}
+                </button>
+            </div>
+
+            <div v-if="currentPlaylist && spotifyConnected" class="selected-playlist-info">
+                <h3>Selected Playlist:</h3>
+                <p>{{ currentPlaylist.playlist_name }}</p>
+            </div>
+
+            <div v-if="!currentPlaylist && spotifyConnected" class="no-playlist-selected">
+                <p>Select a playlist above to play when timer starts</p>
+            </div>
+
+            <h1>Themes</h1>
+            <button type="button" v-for="theme in themes" :key="theme.id" @click="setTheme(theme.id)"
+                :class="{'selected': theme.id === selectedTheme, 'theme-button': true}">
+                <img class="button-image theme-button-image" :src="theme.background" :alt="theme.name">
+                <img class="theme-button-background" :src="theme.background" :alt="theme.name">
+                <span class="button-text theme-button-text">{{ theme.name }}</span>
+            </button>
+        </div>
+
+        <div class="container" :class="{'hidden': (!show_menu || timerRunning)}">
+            <div id="timer" class="">
+                <div id="time_input">
+                    <!-- timer input format: separate text boxes for each -->
+                    <input v-show="!timerRunning" type="text" id="hours" placeholder="hh" min="0" max="99"
+                        oninput="updateInput()">
+                    <div v-show="timerRunning" id="hours_display">00</div>
+                    <div class="colon">:</div>
+                    <input v-show="!timerRunning" type="text" id="minutes" placeholder="mm" min="0" max="59"
+                        oninput="updateInput()">
+                    <div v-show="timerRunning" id="minutes_display">00</div>
+                    <div class="colon">:</div>
+                    <input v-show="!timerRunning" type="text" id="seconds" placeholder="ss" min="0" max="59"
+                        oninput="updateInput()">
+                    <div v-show="timerRunning" id="seconds_display">00</div>
+                </div>
+
+                <div id="controls">
+                    <button id="startTimer" v-show="!timerRunning" @click="startTimer" onclick="startTimer()"
+                        type="button">Start</button>
+                    <button id="pauseTimer" v-show="timerRunning" @click="pauseTimer" onclick="pauseTimer()"
+                        type="button" disabled>Pause</button>
+                    <button id="resumeTimer" v-show="timerRunning" @click="resumeTimer" onclick="resumeTimer()"
+                        type="button" disabled>Resume</button>
+                    <button id="resetTimer" v-show="timerRunning" @click="resetTimer" onclick="resetTimer()"
+                        type="button">Reset</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</body>
+
+</html>

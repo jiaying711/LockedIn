@@ -1,0 +1,192 @@
+:root {
+    --sidebar-width: 25%;
+    --topbar-height: 15%;
+    --transition-timing: cubic-bezier(0.2, 1, 0.3, 1);
+    --transition-duration: 0.5s;
+    --font-family: 'Roboto', sans-serif;
+    --button-bg: rgba(0, 0, 0, 0.2);
+    --button-border: rgba(255, 255, 255, 0.2);
+    --sidebar-bg: #ffffffee;
+    --sidebar-shadow: 10px 0px 0 rgba(0, 0, 0, 1);
+}
+
+* {
+    font-family: var(--font-family);
+    transition: all var(--transition-duration) var(--transition-timing);
+    box-sizing: border-box;
+}
+
+body {
+    background: url('/images/backgrounds/japanese-light.png') no-repeat center center fixed;
+    background-size: cover;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: flex;
+    align-items: flex;
+}
+
+#header {
+    font-size: 2em;
+    font-weight: 600;
+}
+
+.header {
+    color: white;
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 2px 2px 0 #000;
+    outline: 0;
+    background-color: transparent;
+    padding: 0;
+    border: 0;
+    font-size: 2em;
+    font-weight: 600;
+}
+
+h2 {
+    margin-top: 1rem;
+    font-size: 1.75rem;
+}
+
+#login {
+    width: 50%;
+    text-align: center;
+    padding: 1.5rem;
+    vertical-align: middle;
+    background: #ffffffaa;
+    /* top, right, down, left */
+    margin: 1rem auto;
+    border-radius: 16px;
+    box-shadow: 5px 10px 0 rgba(0, 0, 0, 1);
+    border: 2px solid black;
+    backdrop-filter: blur(4px);
+}
+
+.preview {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    margin-bottom: 10px;
+}
+
+.hidden {
+    display: none;
+}
+
+.visually-hidden {
+    position: absolute;
+    left: -9999px;
+}
+
+.toggle {
+    margin-top: 1rem;
+    text-align: center;
+    color: #007bff;
+    cursor: pointer;
+}
+
+.toggle:hover {
+    text-decoration: underline;
+}
+
+button {
+    width: 100%;
+    padding: 0.5rem;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1.1rem;
+    transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
+}
+
+button:hover {
+    background-color: #0056b3;
+    box-shadow: 0 4px 10px rgba(0, 91, 187, 0.3);
+}
+
+button:focus {
+    outline: 2px solid #0056b3;
+    outline-offset: 2px;
+}
+
+button:active {
+    transform: scale(0.98);
+    background-color: #003c7a;
+}
+
+input {
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+    font-size: 1rem;
+}
+
+form {
+    display: none;
+    flex-direction: column;
+}
+
+form.active {
+    display: flex;
+}
+
+.avatar-upload-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    /* space between label and input */
+    margin-bottom: 10px;
+}
+
+.avatar-upload-row label {
+    font-weight: bold;
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+}
+
+#copyright {
+    font-size: 0.8rem;
+    color: grey;
+}
+
+footer {
+    padding: 8px;
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    #login {
+        width: 90%;
+        padding: 1rem;
+    }
+
+    h1,
+    h2 {
+        font-size: 1.5em;
+    }
+
+    input,
+    button {
+        width: 100%;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    h2 {
+        font-size: 1.2rem;
+    }
+
+    button {
+        font-size: 1rem;
+        padding: 0.5rem;
+    }
+
+    input {
+        font-size: 0.9rem;
+    }
+}

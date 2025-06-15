@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign in to LockedIn</title>
+    <link rel="stylesheet" href="/stylesheets/login.css">
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="/javascripts/index.js"></script>
+    <script src="/javascripts/login.js" defer></script>
+</head>
+
+<body>
+    <div id="login">
+        <h1 id="header" class="header">LockedIn</h1>
+        <h2 id="formTitle">Login</h2>
+        <!-- Login Form -->
+        <form id="loginForm" class="active">
+            <label for="login-username" class="visually-hidden">Username</label>
+            <input id="login-username" type="text" name="username" placeholder="Username" required />
+
+            <label for="login-password" class="visually-hidden">Password</label>
+            <input id="login-password" type="password" name="password" placeholder="Password" required />
+
+            <button type="submit">Login</button>
+        </form>
+
+        <!-- Signup Form -->
+        <form id="signupForm" enctype="multipart/form-data">
+            <label for="signup-username" class="visually-hidden">Username</label>
+            <input id="signup-username" type="text" name="username" placeholder="Username" required />
+
+            <label for="signup-email" class="visually-hidden">Email</label>
+            <input id="signup-email" type="email" name="email" placeholder="Email" required />
+
+            <label for="signup-password" class="visually-hidden">Password</label>
+            <input id="signup-password" type="password" name="password" placeholder="Password" required />
+
+            <div class="avatar-upload-row">
+                <label for="signup-avatar">Avatar: </label>
+                <input id="signup-avatar" type="file" name="avatar" accept="image/*" />
+            </div>
+            <img id="avatarPreview" src="" alt="Avatar preview will appear here" class="preview hidden" />
+
+            <button type="submit">Sign Up</button>
+        </form>
+
+        <!-- role and tabindex for keyboard accessibility (follow WCAG) -->
+        <div class="toggle" id="toggleLink" role="button" tabindex="0">Don't have an account? Sign up</div>
+
+        <footer id="copyright">&copy; LockedIn by 2025 WDC Group 79</footer>
+    </div>
+</body>
+
+</html>

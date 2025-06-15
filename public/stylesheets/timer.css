@@ -1,0 +1,59 @@
+#timer {
+    text-align: center;
+    padding: 20px 20px;
+    vertical-align: middle;
+    background: #ffffffaa;
+    /* top, right, down, left */
+    margin: 15% 15% 15% 15%;
+    border-radius: 30px;
+    box-shadow: 5px 10px 0 rgba(0, 0, 0, 1);
+    border: 2px solid black;
+    backdrop-filter: blur(2px);
+}
+#timer.dark_mode {
+    background: rgb(40, 40, 40);
+    color: white;
+    box-shadow: 5px 10px 0 rgba(255, 255, 255, 1);
+}
+
+#time_input{
+    font-size: 1em;
+}
+
+
+/* impossible to navigate haha */
+#time_input * {
+    color: black;
+    font-family: monospace;
+    box-sizing: border-box;
+    width: 1.2em;
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    outline: none;
+    border: none;
+    background: none;
+    font-size: 3em;
+    /* Remove number input spinners across browsers */
+    appearance: textfield;
+    -moz-appearance: textfield;
+    -webkit-appearance: textfield;
+    &::placeholder {
+        color: black;
+    }
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    &[type=number] {
+        -moz-appearance: textfield;
+        padding-right: 0.1em;
+    }
+}
+#timer.dark_mode * {
+    color: white;
+    &::placeholder {
+        color: white;
+    }
+}

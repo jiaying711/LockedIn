@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Admin Profile</title>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <link rel="stylesheet" href="/stylesheets/adminProfile.css">
+    <script src="/javascripts/index.js"></script>
+</head>
+
+<body>
+  <div class="page-centre">
+    <div class="profile-container">
+      <form id="userControlForm">
+        <h1>Admin Controls</h1>
+        <div class="admin-controls">
+          <div class="search-row">
+            <label for="emailInput">Search by user email:</label>
+            <input type="email" id="emailInput" name="email" placeholder="Enter email" required>
+          </div>
+
+          <div class="button-row">
+            <button type="button" id="addBtn">Add user</button>
+            <button type="submit" id="deleteBtn">Delete User</button>
+            <button type="submit" id="editBtn">Edit User Details</button>
+          </div>
+          <br>
+          <button type="button" id="listAllBtn">List All Users</button>
+        </div>
+      </form>
+
+
+      <div id="addUserModal" class="modal">
+        <div class="modal-content">
+          <h3>Add New User</h3>
+          <form id="createUserForm" enctype="multipart/form-data">
+            <input type="username" id="newUsername" name="username" placeholder="Username" required><br>
+            <br>
+            <input type="email" id="newUserEmail" name="email" placeholder="Email" required><br>
+            <br>
+            <input type="password" id="newUserPassword" name="password" placeholder="Password" required autocomplete><br>
+            <br>
+            <label for="avatar">Avatar: </label>
+            <input id="avatar" type="file" name="newUserAvatar" accept="image/*" /><br>
+            <br>
+            <img id="avatarPreview" src="" alt="Avatar preview will appear here" class="preview hidden" />
+            <div class="button-row">
+              <button id="createUserBtn">Create</button>
+              <button onclick="closeModal('addUserModal')">Cancel</button>
+            </div>
+        </div>
+        </form>
+
+      </div>
+
+      <div id="confirmDeleteModal" class="modal">
+        <div class="modal-content">
+          <p>Are you sure you want to delete this user?</p>
+          <div class="button-row">
+            <button onclick="confirmDelete()">Delete</button>
+            <button onclick="closeModal('confirmDeleteModal')">Cancel</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="editUserModal" style="display:none;">
+        <input id="editUsername" placeholder="Username" name="username"/>
+        <input id="editUserEmail" placeholder="Email" name="email"/>
+        <button id="updateUserBtn">Update</button>
+        <button onclick="closeModal('editUserModal')">Cancel</button>
+      </div>
+
+
+      <div class="navigation">
+        <a href="/">← Back to Home</a>
+        <a href="#" id="logoutLink">Logout →</a>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="/javascripts/admin_profile.js"></script>
+
+
+</body>
+
+</html>
