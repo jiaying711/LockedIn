@@ -1,4 +1,4 @@
-💚 # Project scope:
+# Project scope: 💚
 - user authentication
 - user sessions
 - database with password hashing and profile picture?
