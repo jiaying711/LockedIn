@@ -4,7 +4,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var session = require('express-session');
 var dotenv = require('dotenv');
-var xss = require('xss-clean');
+const helmet = require('helmet');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -32,7 +32,8 @@ app.use(session({
         maxAge: 24 * 60 * 60 * 1000 // 1 day
     }
 }));
-app.use(xss()); // use xss-clean after body parsing
+app.use(helmet());
+// app.use(xss()); // use xss-clean after body parsing (outdated)
 
 
 app.use('/avatars', express.static(path.join(__dirname, 'public/images/avatars')));
@@ -48,3 +49,9 @@ app.use('/playlist', playlistRouter);
 app.use('/admin', require('./routes/admin'));
 
 module.exports = app;
+
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
