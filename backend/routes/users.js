@@ -1,22 +1,22 @@
 var express = require('express');
-const argon2 = require('argon2');
+// const argon2 = require('argon2');
 var router = express.Router();
-const multer = require('multer'); // avatar
+// const multer = require('multer'); // avatar
 const path = require('path'); // avatar
 const fs = require('fs').promises; // avatar deletion
 const { pool } = require('../db'); // MySQL connection
 const { validateFields } = require('../utils/validators');
 
 // configure multer for avatar upload
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, 'public/images/avatars/'),
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname);
-    const safeName = req.session.user ? req.session.user.username.replace(/\W/g, '_') : 'user';
-    cb(null, `${safeName}_${Date.now()}${ext}`);
-  }
-});
-const upload = multer({ storage });
+// const storage = multer.diskStorage({
+//   destination: (req, file, cb) => cb(null, 'public/images/avatars/'),
+//   filename: (req, file, cb) => {
+//     const ext = path.extname(file.originalname);
+//     const safeName = req.session.user ? req.session.user.username.replace(/\W/g, '_') : 'user';
+//     cb(null, `${safeName}_${Date.now()}${ext}`);
+//   }
+// });
+// const upload = multer({ storage });
 
 /* GET users listing. */
 router.get('/', function (req, res, next) {
@@ -24,29 +24,29 @@ router.get('/', function (req, res, next) {
 });
 
 // Signup route
-router.post('/signup', upload.single('avatar'), validateFields([
-  { field: 'username', name: 'Username', min: 3, max: 50 },
-  { field: 'email', name: 'Email', min: 3, max: 50 },
-  { field: 'password', name: 'Password', min: 6 }
-]), async function (req, res) {
-  const { username, email, password } = req.body;
-  const avatar = req.file ? `/avatars/${req.file.filename}` : null;
+// router.post('/signup', upload.single('avatar'), validateFields([
+//   { field: 'username', name: 'Username', min: 3, max: 50 },
+//   { field: 'email', name: 'Email', min: 3, max: 50 },
+//   { field: 'password', name: 'Password', min: 6 }
+// ]), async function (req, res) {
+//   const { username, email, password } = req.body;
+//   const avatar = req.file ? `/avatars/${req.file.filename}` : null;
 
-  try {
-    const [existingUsers] = await pool.query('SELECT * FROM users WHERE username = ?', [username]);
-    if (existingUsers.length > 0) {
-      return res.status(400).json({ error: 'Username already exists' });
-    }
+//   try {
+//     const [existingUsers] = await pool.query('SELECT * FROM users WHERE username = ?', [username]);
+//     if (existingUsers.length > 0) {
+//       return res.status(400).json({ error: 'Username already exists' });
+//     }
 
-    const hashedPassword = await argon2.hash(password);
-    await pool.query('INSERT INTO users (username, email, password_hash, avatar_path) VALUES (?, ?, ?,?)', [username.trim(), email.trim(), hashedPassword, avatar]);
-    res.json({ message: 'Signup successful!' });
+//     const hashedPassword = await argon2.hash(password);
+//     await pool.query('INSERT INTO users (username, email, password_hash, avatar_path) VALUES (?, ?, ?,?)', [username.trim(), email.trim(), hashedPassword, avatar]);
+//     res.json({ message: 'Signup successful!' });
 
-  } catch (err) {
-    console.error('Signup error:', err);
-    res.status(500).json({ error: 'Database error during signup' });
-  }
-});
+//   } catch (err) {
+//     console.error('Signup error:', err);
+//     res.status(500).json({ error: 'Database error during signup' });
+//   }
+// });
 
 // Login route
 router.post('/login', validateFields([
@@ -176,109 +176,109 @@ router.get('/profile', async function (req, res) {
 });
 
 // UPDATE user profile
-router.put('/profile', upload.single('avatar'),
-  validateFields([
-    { field: 'username', name: 'Username', min: 3, max: 50 },
-    { field: 'email', name: 'Email', min: 3, max: 50 }
-  ]),
-  async function (req, res) {
-    // Check if user is logged in
-    if (!req.session.user) {
-      return res.status(401).json({ error: 'Not logged in' });
-    }
+// router.put('/profile', upload.single('avatar'),
+//   validateFields([
+//     { field: 'username', name: 'Username', min: 3, max: 50 },
+//     { field: 'email', name: 'Email', min: 3, max: 50 }
+//   ]),
+//   async function (req, res) {
+//     // Check if user is logged in
+//     if (!req.session.user) {
+//       return res.status(401).json({ error: 'Not logged in' });
+//     }
 
-    const { username, email, currentPassword, newPassword } = req.body;
-    const newAvatar = req.file ? `/images/avatars/${req.file.filename}` : null;
+//     const { username, email, currentPassword, newPassword } = req.body;
+//     const newAvatar = req.file ? `/images/avatars/${req.file.filename}` : null;
 
-    // input validation for password
-    if (newPassword && newPassword.trim().length < 6) {
-      return res.status(400).json({ error: 'New Password must be at least 6 characters' });
-    }
+//     // input validation for password
+//     if (newPassword && newPassword.trim().length < 6) {
+//       return res.status(400).json({ error: 'New Password must be at least 6 characters' });
+//     }
 
 
-    try {
-      // First, get current user data and verify password
-      const [users] = await pool.query(
-        'SELECT * FROM users WHERE username = ?',
-        [req.session.user.username]
-      );
+//     try {
+//       // First, get current user data and verify password
+//       const [users] = await pool.query(
+//         'SELECT * FROM users WHERE username = ?',
+//         [req.session.user.username]
+//       );
 
-      if (users.length === 0) {
-        return res.status(404).json({ error: 'User not found' });
-      }
+//       if (users.length === 0) {
+//         return res.status(404).json({ error: 'User not found' });
+//       }
 
-      const user = users[0];
+//       const user = users[0];
 
-      // check if current password is correct
-      const valid = await argon2.verify(user.password_hash, currentPassword);
-      if (!valid) {
-        return res.status(400).json({ error: 'Current password is incorrect' });
-      }
+//       // check if current password is correct
+//       const valid = await argon2.verify(user.password_hash, currentPassword);
+//       if (!valid) {
+//         return res.status(400).json({ error: 'Current password is incorrect' });
+//       }
 
-      // Check if new username already exists (if username is being changed)
-      if (username !== user.username) {
-        const [existingUsers] = await pool.query(
-          'SELECT id FROM users WHERE username = ? AND id != ?',
-          [username, user.id]
-        );
+//       // Check if new username already exists (if username is being changed)
+//       if (username !== user.username) {
+//         const [existingUsers] = await pool.query(
+//           'SELECT id FROM users WHERE username = ? AND id != ?',
+//           [username, user.id]
+//         );
 
-        if (existingUsers.length > 0) {
-          return res.status(400).json({ error: 'Username already taken' });
-        }
-      }
+//         if (existingUsers.length > 0) {
+//           return res.status(400).json({ error: 'Username already taken' });
+//         }
+//       }
 
-      // Update user data
-      let updateQuery = 'UPDATE users SET username = ?, email = ?, updated_at = ?';
-      let params = [username.trim(), email.trim(), new Date()];
+//       // Update user data
+//       let updateQuery = 'UPDATE users SET username = ?, email = ?, updated_at = ?';
+//       let params = [username.trim(), email.trim(), new Date()];
 
-      // If new password provided, include it
-      if (newPassword && newPassword.trim() !== '') {
-        const hashedNewPassword = await argon2.hash(newPassword);
-        updateQuery += ', password_hash = ?';
-        params.push(hashedNewPassword);
-      }
+//       // If new password provided, include it
+//       if (newPassword && newPassword.trim() !== '') {
+//         const hashedNewPassword = await argon2.hash(newPassword);
+//         updateQuery += ', password_hash = ?';
+//         params.push(hashedNewPassword);
+//       }
 
-      // if new avatar provided, delete old one and include it
-      if (newAvatar) {
-        if (user.avatar_path) {
-          // old avatar still exists
-          const oldAvatar = path.join(__dirname, '..', 'public', user.avatar_path);
+//       // if new avatar provided, delete old one and include it
+//       if (newAvatar) {
+//         if (user.avatar_path) {
+//           // old avatar still exists
+//           const oldAvatar = path.join(__dirname, '..', 'public', user.avatar_path);
 
-          try {
-            await fs.unlink(oldAvatar);
-            console.log('Deleted old avatar:', oldAvatar);
-          } catch (err) {
-            console.error('Error deleting old avatar:', err);
-          }
-        }
-        updateQuery += ', avatar_path = ?';
-        params.push(newAvatar);
-      }
+//           try {
+//             await fs.unlink(oldAvatar);
+//             console.log('Deleted old avatar:', oldAvatar);
+//           } catch (err) {
+//             console.error('Error deleting old avatar:', err);
+//           }
+//         }
+//         updateQuery += ', avatar_path = ?';
+//         params.push(newAvatar);
+//       }
 
-      updateQuery += ' WHERE id = ?';
-      params.push(user.id);
+//       updateQuery += ' WHERE id = ?';
+//       params.push(user.id);
 
-      await pool.query(updateQuery, params);
+//       await pool.query(updateQuery, params);
 
-      // Increment profile updates counter for achievement tracking
-      await pool.query(
-        'UPDATE users SET profile_updates_count = profile_updates_count + 1 WHERE id = ?',
-        [user.id]
-      );
+//       // Increment profile updates counter for achievement tracking
+//       await pool.query(
+//         'UPDATE users SET profile_updates_count = profile_updates_count + 1 WHERE id = ?',
+//         [user.id]
+//       );
 
-      // Update session with new username if it changed
-      req.session.user.username = username.trim();
+//       // Update session with new username if it changed
+//       req.session.user.username = username.trim();
 
-      if (newAvatar) {
-        const sessionAvatarPath = newAvatar.replace('/images/avatars/', '/avatars/');
-        req.session.user.avatar = sessionAvatarPath;
-      }
+//       if (newAvatar) {
+//         const sessionAvatarPath = newAvatar.replace('/images/avatars/', '/avatars/');
+//         req.session.user.avatar = sessionAvatarPath;
+//       }
 
-      res.json({ message: 'Profile updated successfully.    Looking clean!' });
-    } catch (err) {
-      console.error('Profile update error:', err);
-      res.status(500).json({ error: 'Database error during update' });
-    }
-  });
+//       res.json({ message: 'Profile updated successfully.    Looking clean!' });
+//     } catch (err) {
+//       console.error('Profile update error:', err);
+//       res.status(500).json({ error: 'Database error during update' });
+//     }
+//   });
 
 module.exports = router;

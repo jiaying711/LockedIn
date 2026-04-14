@@ -73,7 +73,7 @@ router.get('/', async (req, res) => {
 router.get('/token', async (req, res) => {
     const spotify = req.session.spotify;
 
-    console.log("from /token:",req.session);
+    console.log("from /token:", req.session);
 
     if (!spotify) {
         res.status(401).json({ error: 'Not authenticated with Spotify' });
