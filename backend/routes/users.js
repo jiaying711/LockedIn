@@ -5,7 +5,7 @@ const multer = require('multer'); // avatar
 const path = require('path'); // avatar
 const fs = require('fs').promises; // avatar deletion
 const { pool } = require('../db'); // MySQL connection
-const { validateFields } = require('../public/javascripts/validators');
+const { validateFields } = require('../utils/validators');
 
 // configure multer for avatar upload
 const storage = multer.diskStorage({
@@ -258,13 +258,13 @@ router.put('/profile', upload.single('avatar'),
       updateQuery += ' WHERE id = ?';
       params.push(user.id);
 
-    await pool.query(updateQuery, params);
+      await pool.query(updateQuery, params);
 
-    // Increment profile updates counter for achievement tracking
-    await pool.query(
-      'UPDATE users SET profile_updates_count = profile_updates_count + 1 WHERE id = ?',
-      [user.id]
-    );
+      // Increment profile updates counter for achievement tracking
+      await pool.query(
+        'UPDATE users SET profile_updates_count = profile_updates_count + 1 WHERE id = ?',
+        [user.id]
+      );
 
       // Update session with new username if it changed
       req.session.user.username = username.trim();

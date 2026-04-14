@@ -5,7 +5,7 @@ const multer = require('multer'); // avatar
 const path = require('path'); // avatar
 const fs = require('fs').promises; // avatar deletion
 const { pool } = require('../db'); // MySQL connection
-const { validateFields } = require('../public/javascripts/validators');
+const { validateFields } = require('../utils/validators');
 
 // configure multer for avatar upload
 const storage = multer.diskStorage({
@@ -30,7 +30,7 @@ router.get('/isAdmin', isAdmin, (req, res) => {
   res.json({ isAdmin: true });
 })
 
-router.post('/getUser', isAdmin, async (req,res) => {
+router.post('/getUser', isAdmin, async (req, res) => {
   const { email } = req.body;
   try {
     const [rows] = await pool.query('SELECT username, email FROM users WHERE email = ?', [email]);
@@ -84,7 +84,7 @@ router.put('/editUser', isAdmin,
     try {
       const [result] = await pool.query(
         'UPDATE users SET username = ?, email = ? WHERE email = ?',
-        [username, email,  originalEmail]
+        [username, email, originalEmail]
       );
       if (result.affectedRows === 0) return res.status(404).json({ error: 'User not found' });
       res.json({ message: 'User updated' });
