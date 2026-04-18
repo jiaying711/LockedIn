@@ -42,11 +42,6 @@ app.use('/', indexRouter);
 // app.use('/playlist', playlistRouter);
 // app.use('/admin', adminRouter);
 
-// home route
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/public/static/index.html'));
-});
-
 // start server
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
