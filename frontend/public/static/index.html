@@ -11,7 +11,7 @@
     <script src="/javascripts/timer.js" defer></script>
     <script src="/javascripts/vue.js" defer></script>
 
-    <link rel="icon" type="image/jpg" href="/images/mango_icon.png"/>
+    <link rel="icon" type="image/jpg" href="/images/mango_icon.png" />
     <link rel="stylesheet" href="/stylesheets/style.css">
     <link rel="stylesheet" href="/stylesheets/timer.css">
 </head>
@@ -91,7 +91,8 @@
             </button>
 
             <!-- spotify connected -->
-            <button id="add-playlists-button" class="button music-button" type="button" v-if="spotifyConnected" @click="playlistModalVisible = true">Add Playlist</button>
+            <button id="add-playlists-button" class="button music-button" type="button" v-if="spotifyConnected"
+                @click="playlistModalVisible = true">Add Playlist</button>
             <button class="button music-button" type="button" v-if="spotifyConnected" @click="toggleSpotifyPlaylists">
                 {{ showSpotifyPlaylists ? 'Show saved playlists' : 'Show account playlists' }}
             </button>
@@ -112,8 +113,8 @@
                     :class="{'selected': currentPlaylist && currentPlaylist.id === playlist.id}">
                     {{ playlist.playlist_name }}
                 </button>
-                <button class="playlist-button" type="button" v-if="spotifyConnected" v-for="playlist in curatedPlaylists"
-                    @click="setPlaylist(playlist)"
+                <button class="playlist-button" type="button" v-if="spotifyConnected"
+                    v-for="playlist in curatedPlaylists" @click="setPlaylist(playlist)"
                     :class="{'selected': currentPlaylist && currentPlaylist.id === playlist.id}">
                     {{ playlist.playlist_name }}
                 </button>

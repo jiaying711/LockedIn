@@ -83,13 +83,13 @@ const vueinst = Vue.createApp({
                     method: 'POST',
                     credentials: 'include'
                 })
-                .then((res) => res.json())
-                .then((data) => {
-                    console.log('Spotify connection tracked:', data.message);
-                })
-                .catch((err) => {
-                    console.error('Error tracking Spotify connection:', err);
-                });
+                    .then((res) => res.json())
+                    .then((data) => {
+                        console.log('Spotify connection tracked:', data.message);
+                    })
+                    .catch((err) => {
+                        console.error('Error tracking Spotify connection:', err);
+                    });
             }
 
             // Logs into Spotify
@@ -192,8 +192,8 @@ const vueinst = Vue.createApp({
             }
         },
 
-        admin(){
-            if(this.isAdmin === true){
+        admin() {
+            if (this.isAdmin === true) {
                 window.location.href = '/admin_profile.html';
             }
         },
@@ -230,22 +230,22 @@ const vueinst = Vue.createApp({
                 },
                 body: JSON.stringify({ playlist_name: this.playlist_name, spotify_id: this.spotify_id })
             })
-            .then((res) => {
-                if (!res.ok) {
-                    throw new Error(`HTTP ${res.status}: ${res.statusText}`);
-                }
-                return res.json();
-            })
-            .then((data) => {
-                this.userPlaylists.push(data.playlist);
-                this.playlistModalVisible = false;
-                this.playlist_name = '';
-                this.spotify_id = '';
-            })
-            .catch((err) => {
-                console.error('Error adding playlist:', err);
-                alert('Failed to add playlist. Please try again.');
-            });
+                .then((res) => {
+                    if (!res.ok) {
+                        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+                    }
+                    return res.json();
+                })
+                .then((data) => {
+                    this.userPlaylists.push(data.playlist);
+                    this.playlistModalVisible = false;
+                    this.playlist_name = '';
+                    this.spotify_id = '';
+                })
+                .catch((err) => {
+                    console.error('Error adding playlist:', err);
+                    alert('Failed to add playlist. Please try again.');
+                });
         },
 
         async getSpotifyUserPlaylists() {
@@ -281,11 +281,11 @@ const vueinst = Vue.createApp({
             .then((data) => {
                 console.log('login status response:', data);
                 this.loggedIn = data.loggedIn;
-                if(this.loggedIn === true){
+                if (this.loggedIn === true) {
                     this.username = data.user.username;
                     this.isAdmin = data.user.is_admin;
-                    if(data.user.avatar) {
-                        if(data.user.avatar.startsWith('/images')) {
+                    if (data.user.avatar) {
+                        if (data.user.avatar.startsWith('/images')) {
                             this.avatar = data.user.avatar;
                         } else {
                             this.avatar = `/images${data.user.avatar}`;

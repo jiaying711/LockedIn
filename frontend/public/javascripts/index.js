@@ -1,5 +1,5 @@
 // Background management for session persistence
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     loadBackgroundFromSession();
 });
 
@@ -8,15 +8,15 @@ function loadBackgroundFromSession() {
         method: 'GET',
         credentials: 'include'
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.background !== undefined) {
-            setBackgroundTheme(data.background);
-        }
-    })
-    .catch(error => {
-        console.error('Error loading background from session:', error);
-    });
+        .then(response => response.json())
+        .then(data => {
+            if (data.background !== undefined) {
+                setBackgroundTheme(data.background);
+            }
+        })
+        .catch(error => {
+            console.error('Error loading background from session:', error);
+        });
 }
 
 function setBackgroundTheme(themeId) {
@@ -52,15 +52,15 @@ function saveBackgroundToSession(themeId) {
         },
         body: JSON.stringify({ background: themeId })
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            console.log('Background saved to session:', themeId);
-        }
-    })
-    .catch(error => {
-        console.error('Error saving background to session:', error);
-    });
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log('Background saved to session:', themeId);
+            }
+        })
+        .catch(error => {
+            console.error('Error saving background to session:', error);
+        });
 }
 
 // Make functions available globally
