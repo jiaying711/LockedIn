@@ -1,9 +1,9 @@
 var express = require('express');
-// const argon2 = require('argon2');
+const argon2 = require('argon2');
 var router = express.Router();
 // const multer = require('multer'); // avatar
-const path = require('path'); // avatar
-const fs = require('fs').promises; // avatar deletion
+// const path = require('path'); // avatar
+// const fs = require('fs').promises; // avatar deletion
 const { pool } = require('../db'); // MySQL connection
 const { validateFields } = require('../utils/validators');
 
@@ -24,29 +24,31 @@ router.get('/', function (req, res, next) {
 });
 
 // Signup route
-// router.post('/signup', upload.single('avatar'), validateFields([
-//   { field: 'username', name: 'Username', min: 3, max: 50 },
-//   { field: 'email', name: 'Email', min: 3, max: 50 },
-//   { field: 'password', name: 'Password', min: 6 }
-// ]), async function (req, res) {
-//   const { username, email, password } = req.body;
-//   const avatar = req.file ? `/avatars/${req.file.filename}` : null;
+router.post('/signup', validateFields([
+  { field: 'username', name: 'Username', min: 3, max: 50 },
+  { field: 'email', name: 'Email', min: 3, max: 50 },
+  { field: 'password', name: 'Password', min: 6 }
+]), async function (req, res) {
+  const { username, email, password } = req.body;
+  // const avatar = req.file ? `/avatars/${req.file.filename}` : null;
 
-//   try {
-//     const [existingUsers] = await pool.query('SELECT * FROM users WHERE username = ?', [username]);
-//     if (existingUsers.length > 0) {
-//       return res.status(400).json({ error: 'Username already exists' });
-//     }
+  try {
+    const [existingUsers] = await pool.query('SELECT * FROM users WHERE username = ?', [username]);
+    if (existingUsers.length > 0) {
+      return res.status(400).json({ error: 'Username already exists' });
+    }
 
-//     const hashedPassword = await argon2.hash(password);
-//     await pool.query('INSERT INTO users (username, email, password_hash, avatar_path) VALUES (?, ?, ?,?)', [username.trim(), email.trim(), hashedPassword, avatar]);
-//     res.json({ message: 'Signup successful!' });
+    const hashedPassword = await argon2.hash(password);
 
-//   } catch (err) {
-//     console.error('Signup error:', err);
-//     res.status(500).json({ error: 'Database error during signup' });
-//   }
-// });
+    // avatar is still here
+    await pool.query('INSERT INTO users (username, email, password_hash, avatar_path) VALUES (?, ?, ?,?)', [username.trim(), email.trim(), hashedPassword, avatar]);
+    res.json({ message: 'Signup successful!' });
+
+  } catch (err) {
+    console.error('Signup error:', err);
+    res.status(500).json({ error: 'Database error during signup' });
+  }
+});
 
 // Login route
 router.post('/login', validateFields([
@@ -65,7 +67,7 @@ router.post('/login', validateFields([
     if (!user.password_hash) {
       console.error('Missing password hash in database for user:', username);
       return res.status(500).json({ error: 'User data corrupted' });
-    }
+    } // optional?
 
     const isMatch = await argon2.verify(user.password_hash, password);
     if (!isMatch) {
@@ -76,13 +78,13 @@ router.post('/login', validateFields([
     const now = new Date();
     await pool.query('UPDATE users SET last_login = ? WHERE id = ?', [now, user.id]);
 
-    // admin authentication
-    if (username === 'admin' && password === 'glockedin') {
-      user.is_admin = true;
-    } else {
-      user.is_admin = false;
-    }
-    await pool.query('UPDATE users SET is_admin = ? WHERE id = ?', [user.is_admin, user.id]);
+    // // admin authentication
+    // if (username === 'admin' && password === 'glockedin') {
+    //   user.is_admin = true;
+    // } else {
+    //   user.is_admin = false;
+    // }
+    // await pool.query('UPDATE users SET is_admin = ? WHERE id = ?', [user.is_admin, user.id]);
 
     // save to session
     req.session.user = {
@@ -99,7 +101,6 @@ router.post('/login', validateFields([
         console.error('Session save error:', err);
         return res.status(500).json({ error: 'Session save error' });
       }
-
       res.json({ message: `Welcome, ${user.username}!` });
     });
 
@@ -142,7 +143,7 @@ router.post('/logout', async function (req, res) {
 router.get('/status', function (req, res) {
   // console.log('full session for status:', req.session);
   if (req.session && req.session.user) {
-    res.json({ loggedIn: true, user: req.session.user || null });
+    res.json({ loggedIn: true, user: req.session.user });
     // console.log('login status true');
   } else {
     res.json({ loggedIn: false });
@@ -163,11 +164,9 @@ router.get('/profile', async function (req, res) {
       'SELECT id, username, email, avatar_path FROM users WHERE username = ?',
       [req.session.user.username]
     );
-
     if (users.length === 0) {
       return res.status(404).json({ error: 'User not found' });
     }
-
     res.json(users[0]);
   } catch (err) {
     console.error('Profile fetch error:', err);
