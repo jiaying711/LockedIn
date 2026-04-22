@@ -41,7 +41,8 @@ router.post('/signup', validateFields([
     const hashedPassword = await argon2.hash(password);
 
     // avatar is still here
-    await pool.query('INSERT INTO users (username, email, password_hash, avatar_path) VALUES (?, ?, ?,?)', [username.trim(), email.trim(), hashedPassword, avatar]);
+    // await pool.query('INSERT INTO users (username, email, password_hash, avatar_path) VALUES (?, ?, ?,?)', [username.trim(), email.trim(), hashedPassword, avatar]);
+    await pool.query('INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)', [username.trim(), email.trim(), hashedPassword]);
     res.json({ message: 'Signup successful!' });
 
   } catch (err) {
