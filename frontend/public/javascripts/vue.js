@@ -279,7 +279,7 @@ const vueinst = Vue.createApp({
         })
             .then((res) => res.json())
             .then((data) => {
-                console.log('login status response:', data);
+                // console.log('login status response:', data);
                 this.loggedIn = data.loggedIn;
                 if (this.loggedIn === true) {
                     this.username = data.user.username;
@@ -292,26 +292,26 @@ const vueinst = Vue.createApp({
                         }
                     }
                 }
-                this.checkSpotifyConnection();
+                // this.checkSpotifyConnection();
             })
             .catch((err) => {
                 console.error('Error getting login status', err);
             });
 
-        fetch('/background', {
-            method: 'GET',
-            credentials: 'include'
-        })
-            .then((res) => res.json())
-            .then((data) => {
-                if (data.background !== undefined) {
-                    this.selectedTheme = data.background;
-                    document.body.style.backgroundImage = `url(${this.themes[data.background].background})`;
-                }
-            })
-            .catch((err) => {
-                console.error('Error loading background from session', err);
-            });
+        // fetch('/background', {
+        //     method: 'GET',
+        //     credentials: 'include'
+        // })
+        //     .then((res) => res.json())
+        //     .then((data) => {
+        //         if (data.background !== undefined) {
+        //             this.selectedTheme = data.background;
+        //             document.body.style.backgroundImage = `url(${this.themes[data.background].background})`;
+        //         }
+        //     })
+        //     .catch((err) => {
+        //         console.error('Error loading background from session', err);
+        //     });
     }
 }).mount('body');
 
