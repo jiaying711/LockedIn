@@ -99,7 +99,7 @@ signupForm.addEventListener('submit', (e) => {
 
   const xhttp = new XMLHttpRequest();
   xhttp.open('POST', '/users/signup');
-  // xhttp.setRequestHeader('Content-Type', 'application/json');
+  xhttp.setRequestHeader('Content-Type', 'application/json');
 
   xhttp.onload = () => {
     console.log('status:', xhttp.status);
@@ -114,6 +114,7 @@ signupForm.addEventListener('submit', (e) => {
   xhttp.onerror = () => {
     alert('Network error during signup.');
   };
-  xhttp.send(formData);
+  // xhttp.send(formData); no more avatar
+  xhttp.send(JSON.stringify(data));
 
 });
