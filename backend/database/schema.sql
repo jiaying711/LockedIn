@@ -1,5 +1,5 @@
 -- Set up database and user
--- DROP DATABASE IF EXISTS lockedin; -- (to reset the database)
+DROP DATABASE IF EXISTS lockedin; -- (to reset the database)
 CREATE DATABASE IF NOT EXISTS lockedin;
 CREATE USER IF NOT EXISTS 'lockedinuser'@'localhost' IDENTIFIED BY 'glockedin';
 GRANT ALL PRIVILEGES ON lockedin.* TO 'lockedinuser'@'localhost';
@@ -21,6 +21,9 @@ CREATE TABLE users (
   timer_sessions_completed INT DEFAULT 0,                                     -- number of timer sessions completed (of 2 mins or longer)
   profile_updates_count INT DEFAULT 0,                                        -- number of profile updates completed
   spotify_connections_count INT DEFAULT 0,                                    -- number of times user connected to Spotify
+  pomodoro_focus INT DEFAULT 25,                                              -- pomodoro timer (focus, short break, long break)
+  pomodoro_short_break INT DEFAULT 5,
+  pomodoro_long_break INT DEFAULT 15,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,                             -- when was the account created
   last_login TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- when was the user's last login
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP  -- when the user update the profile
@@ -45,4 +48,14 @@ CREATE TABLE users_playlists (
   PRIMARY KEY (user_id, playlist_id),                                         -- composite primary key (prevents duplicate user-playlist pairs)
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,               -- if user is deleted, remove their playlist associations
   FOREIGN KEY (playlist_id) REFERENCES playlists(id) ON DELETE CASCADE        -- if playlist is deleted, remove all user associations
+);
+
+-- to-dos for each user
+CREATE TABLE IF NOT EXISTS todos (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  task VARCHAR(255) NOT NULL,
+  completed BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
