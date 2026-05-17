@@ -11,3 +11,15 @@
 
 - track time + block time if possible
 - leaderboard (future)
+
+
+## Instructions to start:
+1. cd backend & npm run dev
+2. brew services start mysql
+
+3. mysql < database/schema.sql (for first time)
+4. mysql < backup.sql (with users info, i.e. not first time)
+5. USE lockedin;
+
+after exiting:
+5. mysqldump > database/backup.sql
