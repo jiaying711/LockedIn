@@ -13,6 +13,16 @@ function requireLogin(req, res, next) {
 // GET all todos for logged-in user
 router.get('/', requireLogin, async (req, res) => {
     // get todos from database
+    try {
+        const [todos] = await pool.query(
+            'SELECT * FROM todos WHERE user_id = ? ORDER BY created_at DESC', // latest to oldest
+            [req.session.user.id]
+        );
+        res.json({ todos });
+    } catch (err) {
+        console.error('Error fetching todos:', err);
+        res.status(500).json({ error: 'Database error' });
+    }
 });
 
 // POST create a new todo

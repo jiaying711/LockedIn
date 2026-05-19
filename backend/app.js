@@ -7,6 +7,7 @@ require('dotenv').config();
 // routes var
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var todoRouter = require('./routes/todos');
 // var achievementsRouter = require('./routes/achievements');
 // var spotifyRouter = require('./routes/spotify_route');
 // var playlistRouter = require('./routes/playlist');
@@ -36,6 +37,7 @@ app.use(express.static(path.join(__dirname, '../frontend/public')));
 // routes
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/todos', todoRouter);
 // app.use('/achievements', achievementsRouter);
 // app.use('/spotify', spotifyRouter);
 // app.use('/playlist', playlistRouter);
