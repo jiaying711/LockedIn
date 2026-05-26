@@ -75,6 +75,19 @@ router.put('/:id', requireLogin, async (req, res) => {
 // DELETE a todo
 router.delete('/:id', requireLogin, async (req, res) => {
     // get todo id and user id then delete todo
+    try {
+        const [result] = await pool.query(
+            'DELETE FROM todos WHERE id = ? AND user_id = ?',
+            [req.params.id, req.session.user.id]
+        );
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'Todo not found' });
+        }
+        res.json({ message: 'Deleted successfully' });
+    } catch (err) {
+        console.error('Error deleting todo:', err);
+        res.status(500).json({ error: 'Database error' });
+    }
 });
 
 module.exports = router;
