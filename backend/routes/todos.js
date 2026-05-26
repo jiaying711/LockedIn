@@ -40,6 +40,7 @@ router.post('/', requireLogin, async (req, res) => {
             'INSERT INTO todos (user_id, task) VALUES (?, ?)',
             [req.session.user.id, task.trim()]
         );
+        // insertId is from mysql insert query above, not from select query - not id, but insertId = id
         const [rows] = await pool.query('SELECT * FROM todos WHERE id = ?', [result.insertId]);
         res.json({ todo: rows[0] });
     } catch (err) {
@@ -48,9 +49,27 @@ router.post('/', requireLogin, async (req, res) => {
     }
 });
 
-// PUT (update) toggle todo complete/incomplete
+// PUT (update) toggle todo complete/incomplete (REFER BACK HERE HOW TO USE :id)
 router.put('/:id', requireLogin, async (req, res) => {
     // select user and complete todo (how to know which todo?)
+    try {
+        const [todos] = await pool.query(
+            'SELECT * FROM todos WHERE id = ? AND user_id = ?',
+            [req.params.id, req.session.user.id]
+        );
+        if (todos.length === 0) {
+            return res.status(404).json({ error: 'Todo not found' });
+        }
+        const newCompleted = !todos[0].completed;
+        await pool.query(
+            'UPDATE todos SET completed = ? WHERE id = ?',
+            [newCompleted, req.params.id]
+        );
+        res.json({ id: parseInt(req.params.id), completed: newCompleted }); // parseInt because params.id is a string
+    } catch (err) {
+        console.error('Error updating todo:', err);
+        res.status(500).json({ error: 'Database error' });
+    }
 });
 
 // DELETE a todo
