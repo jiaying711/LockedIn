@@ -27,7 +27,25 @@ router.get('/', requireLogin, async (req, res) => {
 
 // POST create a new todo
 router.post('/', requireLogin, async (req, res) => {
-    // create task and save to database (when to show? => HOMEPAGE -> SHOW TASKS)
+    // create task and save to database (when to show? => HOMEPAGE -> SHOW TASKS) - yet to implement the UI for showing tasks
+    const { task } = req.body;
+    if (!task || task.trim().length === 0) {
+        return res.status(400).json({ error: 'Task cannot be empty' });
+    }
+    if (task.trim().length > 255) {
+        return res.status(400).json({ error: 'Task too long' });
+    }
+    try {
+        const [result] = await pool.query(
+            'INSERT INTO todos (user_id, task) VALUES (?, ?)',
+            [req.session.user.id, task.trim()]
+        );
+        const [rows] = await pool.query('SELECT * FROM todos WHERE id = ?', [result.insertId]);
+        res.json({ todo: rows[0] });
+    } catch (err) {
+        console.error('Error creating todo:', err);
+        res.status(500).json({ error: 'Database error' });
+    }
 });
 
 // PUT (update) toggle todo complete/incomplete

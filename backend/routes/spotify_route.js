@@ -4,8 +4,7 @@ const axios = require('axios');
 const querystring = require('querystring');
 const session = require('express-session');
 
-const CLIENT_ID = 'cb745395ed9847a797bb95d2085e5008';
-const CLIENT_SECRET = '66a600771cae4a85a31c1000e7d277fc';
+
 const REDIRECT_URI = 'http://127.0.0.1:8080/spotify';
 const SCOPES = [
     'user-read-playback-state',
