@@ -23,13 +23,13 @@
             Show Menu
         </button>
 
-        <div class="add-playlists-modal" :class="{'hidden': !playlistModalVisible}">
+        <!-- <div class="add-playlists-modal" :class="{'hidden': !playlistModalVisible}">
             <h1 id="add-playlist-header" class="header">Add playlist</h1>
             <button type="button" class="close-button" @click="playlistModalVisible = false">X</button>
             <input type="text" v-model="playlist_name" placeholder="Playlist name">
             <input type="text" v-model="spotify_id" placeholder="Spotify ID">
             <button type="button" @click="addPlaylist">Add playlist</button>
-        </div>
+        </div> -->
 
         <div class="topbar" :class="{'hidden': (timerRunning)}">
             <h1 id="header" class="header">LockedIn</h1>
@@ -139,35 +139,43 @@
         </div>
 
         <div class="container" :class="{'hidden': (!show_menu || timerRunning)}">
-            <div id="timer" class="">
-                <div id="time_input">
-                    <!-- timer input format: separate text boxes for each -->
-                    <input v-show="!timerRunning" type="text" id="hours" placeholder="hh" min="0" max="99"
-                        oninput="updateInput()">
-                    <div v-show="timerRunning" id="hours_display">00</div>
-                    <div class="colon">:</div>
-                    <input v-show="!timerRunning" type="text" id="minutes" placeholder="mm" min="0" max="59"
-                        oninput="updateInput()">
-                    <div v-show="timerRunning" id="minutes_display">00</div>
-                    <div class="colon">:</div>
-                    <input v-show="!timerRunning" type="text" id="seconds" placeholder="ss" min="0" max="59"
-                        oninput="updateInput()">
-                    <div v-show="timerRunning" id="seconds_display">00</div>
+            <!-- TODO PANEL -->
+            <div id="todo-panel">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <h2>Tasks</h2>
+                    <span class="todo-stats" v-if="loggedIn">
+                        {{ todos.filer(t => t.completed).length }}/{{ todos.length }} done
+                    </span>
                 </div>
 
-                <div id="controls">
-                    <button id="startTimer" v-show="!timerRunning" @click="startTimer" onclick="startTimer()"
-                        type="button">Start</button>
-                    <button id="pauseTimer" v-show="timerRunning" @click="pauseTimer" onclick="pauseTimer()"
-                        type="button" disabled>Pause</button>
-                    <button id="resumeTimer" v-show="timerRunning" @click="resumeTimer" onclick="resumeTimer()"
-                        type="button" disabled>Resume</button>
-                    <button id="resetTimer" v-show="timerRunning" @click="resetTimer" onclick="resetTimer()"
-                        type="button">Reset</button>
+                <div v-if="!loggedIn" class="todo-login-notice">
+                    <a href="/login.html">Log in</a> to save to your tasks
+                </div>
+
+                <div class="todo-input-row" v-if="loggedIn">
+                    <input type="text" v-model="newTodo" placeholder="Add a task..." @keyup.enter="addTodo"
+                        maxlength="255" />
+                    <button type="button" @click="addTodo">+</button>
+                </div>
+
+                <div class="todo-list" v-if="loggedIn">
+                    <div v-if="todos.length === 0" class="todo-empty">
+                        No tasks yet - add one above
+                    </div>
+
+                    <div v-for="todo in todos" :key="todo.id" class="todo-item" :class="{ completed: todo.completed }"
+                        @click="toggleTodo(todo)">
+
+                        <div class="todo-checkbox">
+                            <span class="todo-checkbox-tick">&#10003</span>
+                            <!-- tick symbol -->
+                        </div>
+                        <span class="todo-text">{{ todo.task }}</span>
+                        <button class="todo-delete" type="button" @click.stop="deleteTodo(todo.id)">X</button>
+                    </div>
                 </div>
             </div>
         </div>
-
     </div>
 </body>
 
