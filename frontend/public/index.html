@@ -165,15 +165,83 @@
 
                     <div v-for="todo in todos" :key="todo.id" class="todo-item" :class="{ completed: todo.completed }"
                         @click="toggleTodo(todo)">
-
                         <div class="todo-checkbox">
                             <span class="todo-checkbox-tick">&#10003</span>
-                            <!-- tick symbol -->
+                            <!-- tick symbol (can change to tick emoji instead)-->
                         </div>
                         <span class="todo-text">{{ todo.task }}</span>
                         <button class="todo-delete" type="button" @click.stop="deleteTodo(todo.id)">X</button>
                     </div>
                 </div>
+            </div>
+
+            <!-- pomodoro timer -->
+            <div id="timer">
+
+                <!-- phase badge -->
+                <span id="phase-badge" class="phase-badge phase-badge-focus">🍅 Focus</span>
+
+                <!-- session dots -->
+                <div id="session-dots">
+                    <span class="dots"></span>
+                    <span class="dots"></span>
+                    <span class="dots"></span>
+                    <span class="dots"></span>
+                </div>
+
+                <!-- big time display -->
+                <div class="pomo-time">
+                    <span id="pomo-minutes">25</span>
+                    <span class="pomo-colon">:</span>
+                    <span id="pomo-seconds">00</span>
+                </div>
+
+
+                <!-- break notification -->
+                <div id="notif-panel" class="hidden">
+                    <span id="notif-text"></span> <!-- nothing?? no text?-->
+                    <div class="notif-buttons">
+                        <button id="notif-start" type="button">Start break</button>
+                        <button id="notif-skip" type="button">Skip</button>
+                    </div>
+                </div>
+
+                <!-- controls -->
+                <div id="controls">
+                    <button id="btn-start" type="button" onclick="startTimer()">Start</button>
+                    <button id="btn-pause" type="button" onclick="pauseTimer()" class="hidden" disabled>Pause</button>
+                    <button id="btn-resume" type="button" onclick="resumeTimer()" class="hidden"
+                        disabled>Resume</button>
+                    <button id="btn-reset" type="button" onclick="resetTimer()" class="hidden">Reset</button>
+                </div>
+
+                <!-- settings for the timer -->
+                <details id="settings-panel">
+                    <summary>Settings</summary>
+                    <div class="settings-grid">
+                        <div class="setting-item">
+                            <label>Focus</label>
+                            <input type="number" id="pomo-focus" min="1" max="120" value="25">
+                            <span>min</span>
+                        </div>
+                        <div class="setting-item">
+                            <label>Short break</label>
+                            <input type="number" id="pomo-short" min="1" max="60" value="5">
+                            <span>min</span>
+                        </div>
+                        <div class="setting-item">
+                            <label>Long break</label>
+                            <input type="number" id="pomo-long" min="1" max="120" value="15">
+                            <span>min</span>
+                        </div>
+                    </div>
+
+                    <div class="settings-save-row">
+                        <button type="button" onclick="saveSettings()">Save</button>
+                        <span id="settings-saved" class="hidden">✅ Saved</span>
+                    </div>
+                </details>
+
             </div>
         </div>
     </div>
