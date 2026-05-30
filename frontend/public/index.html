@@ -144,7 +144,7 @@
                 <div style="display: flex; align-items: center; justify-content: space-between;">
                     <h2>Tasks</h2>
                     <span class="todo-stats" v-if="loggedIn">
-                        {{ todos.filer(t => t.completed).length }}/{{ todos.length }} done
+                        {{ todos.filter(t => t.completed).length }}/{{ todos.length }} done
                     </span>
                 </div>
 
